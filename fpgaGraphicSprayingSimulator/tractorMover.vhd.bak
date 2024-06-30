@@ -1,0 +1,39 @@
+library IEEE;
+use ieee.std_logic_1164.all;
+use IEEE.numeric_std.all;
+
+entity tractorMover is
+   port (
+      clock : in std_logic;
+      reset : in std_logic;
+      x_pos, y_pos : out std_logic_vector(9 downto 0);
+      max_x : in unsigned(9 downto 0);
+      max_y : in unsigned(9 downto 0)
+   );
+end entity tractorMover;
+
+architecture Behavioral of tractorMover is
+   signal x, y : unsigned(9 downto 0) := (others => '0');
+begin
+   process(clock, reset)
+   begin
+      if reset = '1' then
+         x <= (others => '0');
+         y <= (others => '0');
+      elsif rising_edge(clock) then
+         if x < max_x then
+            x <= x + 40;
+         else
+            x <= (others => '0');
+            if y < max_y then
+               y <= y + 40;
+            else
+               y <= (others => '0');
+            end if;
+         end if;
+      end if;
+   end process;
+
+   x_pos <= std_logic_vector(x);
+   y_pos <= std_logic_vector(y);
+end architecture Behavioral;
