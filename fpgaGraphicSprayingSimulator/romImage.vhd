@@ -61,7 +61,7 @@ BEGIN
 		address_aclr_a => "NONE",
 		clock_enable_input_a => "BYPASS",
 		clock_enable_output_a => "BYPASS",
-		init_file => "jardimBotanico2.mif",
+		init_file => "../imagens/trator_4bit.mif",
 		intended_device_family => "MAX 10",
 		lpm_hint => "ENABLE_RUNTIME_MOD=NO",
 		lpm_type => "altsyncram",
@@ -103,7 +103,7 @@ END SYN;
 -- Retrieval info: PRIVATE: JTAG_ENABLED NUMERIC "0"
 -- Retrieval info: PRIVATE: JTAG_ID STRING "NONE"
 -- Retrieval info: PRIVATE: MAXIMUM_DEPTH NUMERIC "0"
--- Retrieval info: PRIVATE: MIFfilename STRING "jardimBotanico.mif"
+-- Retrieval info: PRIVATE: MIFfilename STRING "../imagens/trator_4bit.mif"
 -- Retrieval info: PRIVATE: NUMWORDS_A NUMERIC "76800"
 -- Retrieval info: PRIVATE: RAM_BLOCK_TYPE NUMERIC "0"
 -- Retrieval info: PRIVATE: RegAddr NUMERIC "1"
@@ -118,7 +118,7 @@ END SYN;
 -- Retrieval info: CONSTANT: ADDRESS_ACLR_A STRING "NONE"
 -- Retrieval info: CONSTANT: CLOCK_ENABLE_INPUT_A STRING "BYPASS"
 -- Retrieval info: CONSTANT: CLOCK_ENABLE_OUTPUT_A STRING "BYPASS"
--- Retrieval info: CONSTANT: INIT_FILE STRING "jardimBotanico.mif"
+-- Retrieval info: CONSTANT: INIT_FILE STRING "../imagens/trator_4bit.mif"
 -- Retrieval info: CONSTANT: INTENDED_DEVICE_FAMILY STRING "MAX 10"
 -- Retrieval info: CONSTANT: LPM_HINT STRING "ENABLE_RUNTIME_MOD=NO"
 -- Retrieval info: CONSTANT: LPM_TYPE STRING "altsyncram"
@@ -136,8 +136,8 @@ END SYN;
 -- Retrieval info: CONNECT: @clock0 0 0 0 0 clock 0 0 0 0
 -- Retrieval info: CONNECT: q 0 0 12 0 @q_a 0 0 12 0
 -- Retrieval info: GEN_FILE: TYPE_NORMAL romImage.vhd TRUE
--- Retrieval info: GEN_FILE: TYPE_NORMAL romImage.inc FALSE
+-- Retrieval info: GEN_FILE: TYPE_NORMAL romImage.inc TRUE
 -- Retrieval info: GEN_FILE: TYPE_NORMAL romImage.cmp TRUE
--- Retrieval info: GEN_FILE: TYPE_NORMAL romImage.bsf FALSE
--- Retrieval info: GEN_FILE: TYPE_NORMAL romImage_inst.vhd FALSE
+-- Retrieval info: GEN_FILE: TYPE_NORMAL romImage.bsf TRUE
+-- Retrieval info: GEN_FILE: TYPE_NORMAL romImage_inst.vhd TRUE
 -- Retrieval info: LIB_FILE: altera_mf
