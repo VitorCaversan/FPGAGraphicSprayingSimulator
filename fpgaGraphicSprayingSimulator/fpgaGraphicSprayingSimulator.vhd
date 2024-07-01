@@ -2,10 +2,6 @@ library IEEE;
 use ieee.std_logic_1164.all;
 use IEEE.numeric_std.all;
 
--- Prints a spraying simulator on screen.
--- The 640x480 screen is divided into blocks of 40x40 pixels.
--- Each block has a different color, with the logic kept in the sprayField module. 
-
 entity fpgaGraphicSprayingSimulator is
    port(
       MAX10_CLK1_50 : in std_logic;
@@ -22,8 +18,6 @@ end entity fpgaGraphicSprayingSimulator;
 architecture fpgaGraphicSprayingSimulator of fpgaGraphicSprayingSimulator is
    signal pixel_x : std_logic_vector(9 downto 0);
    signal pixel_y : std_logic_vector(9 downto 0);
-   signal pixel_x_final : std_logic_vector(9 downto 0);
-   signal pixel_y_final : std_logic_vector(9 downto 0);
    signal red : std_logic_vector(3 downto 0);
    signal green : std_logic_vector(3 downto 0);
    signal blue : std_logic_vector(3 downto 0);
@@ -59,32 +53,26 @@ architecture fpgaGraphicSprayingSimulator of fpgaGraphicSprayingSimulator is
       );
    end component;
 
-   component clkDiv is
-   PORT
-   (
-      clock      : IN STD_LOGIC ;
-      q      : OUT STD_LOGIC_VECTOR (0 DOWNTO 0)
-   );
-   end component;
    component sprayField is
-   generic (
-      ticksForRGBDarkening : std_logic_vector(31 downto 0) := x"00100000"; -- 268.435.456;
-      squaresQty : integer := 192;
-      screenWidth: integer := 640;
-      screenHeight: integer := 480;
-      squareWidth : integer := 40
-   );
-   port (
-      clk : in std_logic;
-      tractorX : in std_logic_vector(9 downto 0);
-      tractorY : in std_logic_vector(9 downto 0);
-      pixelX : in std_logic_vector(9 downto 0);
-      pixelY : in std_logic_vector(9 downto 0);
-      red : out std_logic_vector(3 downto 0);
-      green : out std_logic_vector(3 downto 0);
-      blue : out std_logic_vector(3 downto 0)
-   );
+      generic (
+         ticksForRGBDarkening : std_logic_vector(31 downto 0) := x"00100000"; -- 268.435.456;
+         squaresQty : integer := 192;
+         screenWidth: integer := 640;
+         screenHeight: integer := 480;
+         squareWidth : integer := 40
+      );
+      port (
+         clk : in std_logic;
+         tractorX : in std_logic_vector(9 downto 0);
+         tractorY : in std_logic_vector(9 downto 0);
+         pixelX : in std_logic_vector(9 downto 0);
+         pixelY : in std_logic_vector(9 downto 0);
+         red : out std_logic_vector(3 downto 0);
+         green : out std_logic_vector(3 downto 0);
+         blue : out std_logic_vector(3 downto 0)
+      );
    end component;
+   
    component VGA_drvr is
       generic(
          H_back_porch:    natural:=48;    
@@ -134,10 +122,6 @@ begin
       pixel_x, pixel_y, clkDivided(0), redTractor, greenTractor, blueTractor, x_pos, y_pos, direction
    );
 
-   pixel_x_final <= std_logic_vector(640 - unsigned(pixel_x)) when SW(2) = '1'
-                     else pixel_x;
-   pixel_y_final <= std_logic_vector(480 - unsigned(pixel_y)) when SW(3) = '1'
-                     else pixel_y;
    sprayField1: sprayField port map(clkDivided(0), x_pos, y_pos, pixel_x, pixel_y, redField, greenField, blueField);
 
    red <= redTractor when redTractor /= "0000" else redField;
