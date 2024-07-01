@@ -123,7 +123,7 @@ begin
    VGA1: VGA_drvr port map(clkDivided(0), SW(0), VGA_HS, VGA_VS, pixel_x, pixel_y, vid_display, red, green, blue, VGA_R, VGA_G, VGA_B);
    
    tractorMover1: tractorMover port map(
-      clock => clkDivided(20), -- Use the 25th bit for the slower clock
+      clock => clkDivided(25), -- Use the 25th bit for the slower clock
       reset => SW(9),
       x_pos => x_pos,
       y_pos => y_pos,
@@ -138,7 +138,7 @@ begin
                      else pixel_x;
    pixel_y_final <= std_logic_vector(480 - unsigned(pixel_y)) when SW(3) = '1'
                      else pixel_y;
-   sprayField1: sprayField port map(clkDivided(0), (SW(9) & SW(8) & SW(7) & SW(6) & "000000"), (SW(4) & SW(3) & SW(2) & SW(1) & "000000"), pixel_x, pixel_y, redField, greenField, blueField);
+   sprayField1: sprayField port map(clkDivided(0), x_pos, y_pos, pixel_x, pixel_y, redField, greenField, blueField);
 
    red <= redTractor when redTractor /= "0000" else redField;
    green <= greenTractor when greenTractor /= "0000" else greenField;
