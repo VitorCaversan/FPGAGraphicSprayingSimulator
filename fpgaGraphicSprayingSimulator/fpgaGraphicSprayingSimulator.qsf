@@ -445,4 +445,5 @@ set_global_assignment -name VHDL_FILE tractorPrinter.vhd
 set_global_assignment -name VHDL_FILE tractorMover.vhd
 set_global_assignment -name QIP_FILE div_freq.qip
 set_global_assignment -name VHDL_FILE sprayField.vhd
+set_global_assignment -name VHDL_FILE rockObstacle.vhd
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top

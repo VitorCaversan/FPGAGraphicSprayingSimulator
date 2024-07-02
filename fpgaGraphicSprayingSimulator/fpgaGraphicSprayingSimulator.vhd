@@ -23,10 +23,13 @@ architecture fpgaGraphicSprayingSimulator of fpgaGraphicSprayingSimulator is
    signal blue : std_logic_vector(3 downto 0);
    signal redTractor, greenTractor, blueTractor : std_logic_vector(3 downto 0);
    signal redField, greenField, blueField : std_logic_vector(3 downto 0);
+   signal redRock, greenRock, blueRock : std_logic_vector(3 downto 0);
    signal clkDivided : std_logic_vector(25 downto 0);
    signal direction : std_logic_vector(1 downto 0);
    signal x_pos, y_pos : std_logic_vector(9 downto 0);
-   signal clkInForTractor : std_logic; -- clkDivided(25), clkDivided(24), clkDivided(23) or clkDivided(22) depending on the value of SW(8 downto 7)
+   signal rock_x_pos : std_logic_vector(9 downto 0) := std_logic_vector(to_unsigned(320, 10)); -- Posição fixa para a pedra no meio
+   signal rock_y_pos : std_logic_vector(9 downto 0); -- Posição controlada pelas chaves SW1 até SW4
+   signal clkInForTractor : std_logic; -- clkDivided(25), clkDivided(24), clkDivided(23) ou clkDivided(22) dependendo do valor de SW(8 downto 7)
 
    component tractorPrinter is
       port (
@@ -43,7 +46,8 @@ architecture fpgaGraphicSprayingSimulator of fpgaGraphicSprayingSimulator is
          clock : in std_logic;
          reset : in std_logic;
          x_pos, y_pos : out std_logic_vector(9 downto 0);
-         direction : out std_logic_vector(1 downto 0)
+         direction : out std_logic_vector(1 downto 0);
+         rock_x_pos, rock_y_pos : in std_logic_vector(9 downto 0)
       );
    end component;
    
@@ -71,6 +75,15 @@ architecture fpgaGraphicSprayingSimulator of fpgaGraphicSprayingSimulator is
          red : out std_logic_vector(3 downto 0);
          green : out std_logic_vector(3 downto 0);
          blue : out std_logic_vector(3 downto 0)
+      );
+   end component;
+
+   component rockObstacle is
+      port (
+         column, row : in std_logic_vector(9 downto 0);
+         clock : in std_logic;
+         red, green, blue : out std_logic_vector(3 downto 0);
+         x_pos, y_pos : in std_logic_vector(9 downto 0)
       );
    end component;
    
@@ -115,16 +128,27 @@ begin
                       clkDivided(24) when SW(8 downto 7) = "01" else
                       clkDivided(23) when SW(8 downto 7) = "10" else
                       clkDivided(22);
+   
    tractorMover1: tractorMover port map(
       clock => clkInForTractor,
       reset => SW(9),
       x_pos => x_pos,
       y_pos => y_pos,
-      direction => direction
+      direction => direction,
+      rock_x_pos => rock_x_pos,
+      rock_y_pos => rock_y_pos
    );
    
    tractorPrinter1: tractorPrinter port map(
-      pixel_x, pixel_y, clkDivided(0), redTractor, greenTractor, blueTractor, x_pos, y_pos, direction
+      column => pixel_x, 
+      row => pixel_y, 
+      clock => clkDivided(0), 
+      red => redTractor, 
+      green => greenTractor, 
+      blue => blueTractor, 
+      x_pos => x_pos, 
+      y_pos => y_pos, 
+      direction => direction
    );
 
    sprayField1: sprayField generic map (
@@ -134,17 +158,35 @@ begin
       screenHeight => 480,
       squareWidth => 40
    )
-   port map(clkDivided(0),
-            x_pos,
-            y_pos,
-            pixel_x,
-            pixel_y,
-            redField,
-            greenField,
-            blueField);
+   port map(
+      clk => clkDivided(0),
+      tractorX => x_pos,
+      tractorY => y_pos,
+      pixelX => pixel_x,
+      pixelY => pixel_y,
+      red => redField,
+      green => greenField,
+      blue => blueField
+   );
 
-   red <= redTractor when redTractor /= "0000" else redField;
-   green <= greenTractor when greenTractor /= "0000" else greenField;
-   blue <= blueTractor when blueTractor /= "0000" else blueField;
+   rockObstacle1: rockObstacle port map(
+      column => pixel_x, 
+      row => pixel_y, 
+      clock => clkDivided(0), 
+      red => redRock, 
+      green => greenRock, 
+      blue => blueRock, 
+      x_pos => rock_x_pos, 
+      y_pos => rock_y_pos
+   );
+
+   process(SW)
+   begin
+      rock_y_pos <= std_logic_vector(to_unsigned(to_integer(unsigned(SW(4 downto 1))) * 40, 10));
+   end process;
+
+   red <= redTractor when redTractor /= "0000" else redRock when redRock /= "0000" else redField;
+   green <= greenTractor when greenTractor /= "0000" else greenRock when greenRock /= "0000" else greenField;
+   blue <= blueTractor when blueTractor /= "0000" else blueRock when blueRock /= "0000" else blueField;
 
 end architecture fpgaGraphicSprayingSimulator;

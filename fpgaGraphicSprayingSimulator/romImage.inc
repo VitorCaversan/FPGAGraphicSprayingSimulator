@@ -15,7 +15,7 @@
 
 FUNCTION romImage 
 (
-	address[16..0],
+	address[10..0],
 	clock
 )
 
