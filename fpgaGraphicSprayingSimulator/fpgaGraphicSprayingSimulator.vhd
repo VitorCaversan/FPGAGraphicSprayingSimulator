@@ -26,6 +26,7 @@ architecture fpgaGraphicSprayingSimulator of fpgaGraphicSprayingSimulator is
    signal clkDivided : std_logic_vector(25 downto 0);
    signal direction : std_logic_vector(1 downto 0);
    signal x_pos, y_pos : std_logic_vector(9 downto 0);
+   signal clkInForTractor : std_logic; -- clkDivided(25), clkDivided(24), clkDivided(23) or clkDivided(22) depending on the value of SW(8 downto 7)
 
    component tractorPrinter is
       port (
@@ -110,8 +111,12 @@ begin
    divFreq1: div_freq port map(MAX10_CLK1_50, clkDivided);
    VGA1: VGA_drvr port map(clkDivided(0), SW(0), VGA_HS, VGA_VS, pixel_x, pixel_y, vid_display, red, green, blue, VGA_R, VGA_G, VGA_B);
    
+   clkInForTractor <= clkDivided(25) when SW(8 downto 7) = "00" else
+                      clkDivided(24) when SW(8 downto 7) = "01" else
+                      clkDivided(23) when SW(8 downto 7) = "10" else
+                      clkDivided(22);
    tractorMover1: tractorMover port map(
-      clock => clkDivided(25), -- Use the 25th bit for the slower clock
+      clock => clkInForTractor,
       reset => SW(9),
       x_pos => x_pos,
       y_pos => y_pos,
@@ -122,7 +127,21 @@ begin
       pixel_x, pixel_y, clkDivided(0), redTractor, greenTractor, blueTractor, x_pos, y_pos, direction
    );
 
-   sprayField1: sprayField port map(clkDivided(0), x_pos, y_pos, pixel_x, pixel_y, redField, greenField, blueField);
+   sprayField1: sprayField generic map (
+      ticksForRGBDarkening => x"01F00000",
+      squaresQty => 192,
+      screenWidth => 640,
+      screenHeight => 480,
+      squareWidth => 40
+   )
+   port map(clkDivided(0),
+            x_pos,
+            y_pos,
+            pixel_x,
+            pixel_y,
+            redField,
+            greenField,
+            blueField);
 
    red <= redTractor when redTractor /= "0000" else redField;
    green <= greenTractor when greenTractor /= "0000" else greenField;

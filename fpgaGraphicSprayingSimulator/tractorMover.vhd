@@ -28,9 +28,13 @@ begin
                when "11" =>  -- Moving right
                   if x < to_unsigned(600, 10) then
                      x <= x + 40;
-                  else
+                  elsif y < to_unsigned(440, 10) then
                      dir <= "00";  -- Change direction to 0° (down)
                      y <= y + 40;  -- Move down one row
+                  else -- Restarts the movement
+                     x <= (others => '0');
+                     y <= (others => '0');
+                     dir <= "11";  -- Change direction to 270° (right)
                   end if;
                when "00" =>  -- Moving down
                   if y < to_unsigned(440, 10) then
@@ -39,6 +43,10 @@ begin
                      else
                         dir <= "11";  -- Change direction to 270° (right)
                      end if;
+                  else -- Restarts the movement
+                     x <= (others => '0');
+                     y <= (others => '0');
+                     dir <= "11";  -- Change direction to 270° (right)
                   end if;
                when "01" =>  -- Moving left
                   if x > to_unsigned(0, 10) then
